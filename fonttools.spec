@@ -1,12 +1,12 @@
 Summary:	A tool to convert TrueType/OpenType fonts to XML and back
 Summary(pl.UTF-8):	Narzędzie do konwersji fontów TrueType/OpenType do/z XML-a
 Name:		fonttools
-Version:	2.3
+Version:	2.4
 Release:	1
 License:	BSD
 Group:		Development/Tools
 Source0:	http://downloads.sourceforge.net/fonttools/%{name}-%{version}.tar.gz
-# Source0-md5:	502cdf6662e1d075f1902fbd995eaace
+# Source0-md5:	41b2d2be48214d2af848e04fded54689
 URL:		http://sourceforge.net/projects/fonttools/
 BuildRequires:	python-devel
 BuildRequires:	python-numpy
