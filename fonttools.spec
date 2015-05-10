@@ -2,7 +2,7 @@ Summary:	A tool to convert TrueType/OpenType fonts to XML and back
 Summary(pl.UTF-8):	Narzędzie do konwersji fontów TrueType/OpenType do/z XML-a
 Name:		fonttools
 Version:	2.4
-Release:	1
+Release:	2
 License:	BSD
 Group:		Development/Tools
 Source0:	http://downloads.sourceforge.net/fonttools/%{name}-%{version}.tar.gz
