@@ -36,12 +36,12 @@ chmod a-x LICENSE.txt
 
 %build
 CFLAGS="%{rpmcflags} %{rpmcppflags}" \
-%{__python} setup.py build
+%py_build
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%{__python} setup.py install \
+%py_install \
 	-O1 \
 	--skip-build \
 	--root $RPM_BUILD_ROOT
