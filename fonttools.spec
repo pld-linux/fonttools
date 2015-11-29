@@ -10,7 +10,7 @@ Source0:	http://downloads.sourceforge.net/fonttools/%{name}-%{version}.tar.gz
 URL:		http://sourceforge.net/projects/fonttools/
 BuildRequires:	python-devel
 BuildRequires:	python-numpy
-BuildRequires:	rpmbuild(macros) >= 1.219
+BuildRequires:	rpmbuild(macros) >= 1.710
 BuildRequires:	sed >= 4.0
 Requires:	python-numpy
 Provides:	ttx = %{version}-%{release}
