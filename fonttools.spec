@@ -1,19 +1,52 @@
+#
+# Conditional build:
+%bcond_without	python2	# CPython 2.x module
+%bcond_without	python3	# CPython 3.x module
+%bcond_without	doc	# Sphinx documentation
+%bcond_without	tests	# pytest tests
+
 Summary:	A tool to convert TrueType/OpenType fonts to XML and back
 Summary(pl.UTF-8):	Narzędzie do konwersji fontów TrueType/OpenType do/z XML-a
 Name:		fonttools
-Version:	2.4
-Release:	2
-License:	BSD
+Version:	3.24.1
+Release:	1
+# basic license is BSD
+# FontTools includes Adobe AGL & AGLFN, which is under 3-clauses BSD license
+License:	MIT, BSD
 Group:		Development/Tools
-Source0:	http://downloads.sourceforge.net/fonttools/%{name}-%{version}.tar.gz
-# Source0-md5:	41b2d2be48214d2af848e04fded54689
-URL:		http://sourceforge.net/projects/fonttools/
-BuildRequires:	python-devel
-BuildRequires:	python-numpy
-BuildRequires:	rpmbuild(macros) >= 1.710
-BuildRequires:	sed >= 4.0
-Requires:	python-numpy
+#Source0Download: https://github.com/fonttools/fonttools/releases
+Source0:	https://github.com/fonttools/fonttools/archive/%{version}/%{name}-%{version}.tar.gz
+# Source0-md5:	4e807a6b0dd9aad6fec202e73b6db7c2
+URL:		https://github.com/fonttools/fonttools
+%if %(locale -a | grep -q '^C\.utf8$'; echo $?)
+BuildRequires:	glibc-localedb-all
+%endif
+%if %{with python2}
+BuildRequires:	python-devel >= 1:2.7
+BuildRequires:	python-setuptools
+%if %{with tests}
+BuildRequires:	python-pytest >= 3.0
+%endif
+%if %{with doc}
+BuildRequires:	sphinx-pdg-2
+%endif
+%endif
+%if %{with python3}
+BuildRequires:	python3-devel >= 1:3.4
+%if %{with tests}
+BuildRequires:	python3-pytest >= 3.0
+%endif
+%endif
+BuildRequires:	rpmbuild(macros) >= 1.714
+%if %{with python2}
+Requires:	python-fonttools = %{version}-%{release}
+Requires:	python-setuptools
+%else
+Requires:	python3-fonttools = %{version}-%{release}
+Requires:	python3-setuptools
+%endif
 Provides:	ttx = %{version}-%{release}
+BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -28,45 +61,107 @@ Zostało napisane w Pythonie i ma otwartą licencję w stylu BSD. TTX
 potrafi wykonywać zrzuty fontów TrueType i OpenType do formatu
 tekstowego opartego na XML-u oraz dokonać operacji odwrotnej.
 
+%package -n python-fonttools
+Summary:	Python 2 tools to manipulate font files
+Summary(pl.UTF-8):	Narzędzia do manipulacji na plikach fontów dla Pythona 2
+Group:		Libraries/Python
+Requires:	python-modules >= 1:2.7
+Requires:	python-brotli >= 1.0.1
+Requires:	python-munkres >= 1.0.10
+Requires:	python-unicodedata2 >= 10.0.0
+
+%description -n python-fonttools
+Python 2 tools to manipulate font files.
+
+%description -n python-fonttools -l pl.UTF-8
+Narzędzia do manipulacji na plikach fontów dla Pythona 2.
+
+%package -n python-fonttools-apidocs
+Summary:	Documentation for Python fonttools module
+Summary(pl.UTF-8):	Dokumentacja modułu Pythona fonttools
+Group:		Documentation
+
+%description -n python-fonttools-apidocs
+Documentation for Python fonttools module.
+
+%description -n python-fonttools-apidocs -l pl.UTF-8
+Dokumentacja modułu Pythona fonttools.
+
+%package -n python3-fonttools
+Summary:	Python 3 tools to manipulate font files
+Summary(pl.UTF-8):	Narzędzia do manipulacji na plikach fontów dla Pythona 3
+Group:		Libraries/Python
+Requires:	python3-modules >= 1:3.4
+Requires:	python3-brotli >= 1.0.1
+Requires:	python3-munkres >= 1.0.10
+Requires:	python3-unicodedata2 >= 10.0.0
+
+%description -n python3-fonttools
+Python 3 tools to manipulate font files.
+
+%description -n python3-fonttools -l pl.UTF-8
+Narzędzia do manipulacji na plikach fontów dla Pythona 3.
+
 %prep
 %setup -q
 
-%{__sed} -i.nobang '1 d' Lib/fontTools/ttx.py
-chmod a-x LICENSE.txt
-
 %build
-CFLAGS="%{rpmcflags} %{rpmcppflags}" \
-%py_build
+export LC_ALL=C.UTF-8
+%if %{with python2}
+%py_build %{?with_tests:test}
+%if %{with doc}
+PYTHONPATH=$(pwd)/build-2/lib \
+%{__make} -C Doc html \
+	SPHINXBUILD=sphinx-build-2
+%endif
+%endif
+
+%if %{with python3}
+%py3_build %{?with_tests:test}
+%endif
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%py_install \
-	-O1 \
-	--skip-build \
-	--root $RPM_BUILD_ROOT
+%if %{with python3}
+%py3_install
+%endif
 
-%{__rm} -r $RPM_BUILD_ROOT%{py_sitedir}/FontTools/fontTools/ttLib/test
-chmod 755 $RPM_BUILD_ROOT%{py_sitedir}/FontTools/fontTools/misc/eexecOp.so
+%if %{with python2}
+%py_install
+
 %py_postclean
+%endif
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc LICENSE.txt Doc/{ChangeLog,changes.txt,documentation.html}
+%doc LICENSE LICENSE.external NEWS.rst README.rst
+%attr(755,root,root) %{_bindir}/fonttools
+%attr(755,root,root) %{_bindir}/pyftinspect
+%attr(755,root,root) %{_bindir}/pyftmerge
+%attr(755,root,root) %{_bindir}/pyftsubset
 %attr(755,root,root) %{_bindir}/ttx
-%{py_sitedir}/FontTools.pth
-%dir %{py_sitedir}/FontTools
-%{py_sitedir}/FontTools/*.py[co]
-%dir %{py_sitedir}/FontTools/fontTools
-%{py_sitedir}/FontTools/fontTools/*.py[co]
-%{py_sitedir}/FontTools/fontTools/encodings
-%dir %{py_sitedir}/FontTools/fontTools/misc
-%{py_sitedir}/FontTools/fontTools/misc/*.py[co]
-%attr(755,root,root) %{py_sitedir}/FontTools/fontTools/misc/eexecOp.so
-%{py_sitedir}/FontTools/fontTools/pens
-%{py_sitedir}/FontTools/fontTools/ttLib
-%{py_sitedir}/FontTools/fonttools-%{version}-py*.egg-info
 %{_mandir}/man1/ttx.1*
+
+%if %{with python2}
+%files -n python-fonttools
+%defattr(644,root,root,755)
+%{py_sitescriptdir}/fontTools
+%{py_sitescriptdir}/fonttools-%{version}-py*.egg-info
+
+%if %{with doc}
+%files -n python-fonttools-apidocs
+%defattr(644,root,root,755)
+%doc Doc/build/html/{_static,designspaceLib,misc,pens,ttLib,varLib,*.html,*.js}
+%endif
+%endif
+
+%if %{with python3}
+%files -n python3-fonttools
+%defattr(644,root,root,755)
+%{py3_sitescriptdir}/fontTools
+%{py3_sitescriptdir}/fonttools-%{version}-py*.egg-info
+%endif
