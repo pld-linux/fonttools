@@ -8,15 +8,15 @@
 Summary:	A tool to convert TrueType/OpenType fonts to XML and back
 Summary(pl.UTF-8):	Narzędzie do konwersji fontów TrueType/OpenType do/z XML-a
 Name:		fonttools
-Version:	3.24.1
-Release:	2
+Version:	3.34.2
+Release:	1
 # basic license is BSD
 # FontTools includes Adobe AGL & AGLFN, which is under 3-clauses BSD license
 License:	MIT, BSD
 Group:		Development/Tools
 #Source0Download: https://github.com/fonttools/fonttools/releases
 Source0:	https://github.com/fonttools/fonttools/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	4e807a6b0dd9aad6fec202e73b6db7c2
+# Source0-md5:	e70418b1d9175a29e7574cd3a7988ccd
 URL:		https://github.com/fonttools/fonttools
 %if %(locale -a | grep -q '^C\.utf8$'; echo $?)
 BuildRequires:	glibc-localedb-all
@@ -26,15 +26,19 @@ BuildRequires:	python-devel >= 1:2.7
 BuildRequires:	python-setuptools
 %if %{with tests}
 BuildRequires:	python-pytest >= 3.0
+BuildRequires:	python-unicodedata2 >= 11.0.0
 %endif
 %if %{with doc}
-BuildRequires:	sphinx-pdg-2
+BuildRequires:	sphinx-pdg-2 >= 1.5.5
 %endif
 %endif
 %if %{with python3}
 BuildRequires:	python3-devel >= 1:3.4
 %if %{with tests}
 BuildRequires:	python3-pytest >= 3.0
+%if "%{py3_ver}" < "3.7"
+BuildRequires:	python3-unicodedata2 >= 11.0.0
+%endif
 %endif
 %endif
 BuildRequires:	rpmbuild(macros) >= 1.714
@@ -66,9 +70,7 @@ Summary:	Python 2 tools to manipulate font files
 Summary(pl.UTF-8):	Narzędzia do manipulacji na plikach fontów dla Pythona 2
 Group:		Libraries/Python
 Requires:	python-modules >= 1:2.7
-Requires:	python-brotli >= 1.0.1
-Requires:	python-munkres >= 1.0.10
-Requires:	python-unicodedata2 >= 10.0.0
+Requires:	python-unicodedata2 >= 11.0.0
 
 %description -n python-fonttools
 Python 2 tools to manipulate font files.
@@ -92,9 +94,9 @@ Summary:	Python 3 tools to manipulate font files
 Summary(pl.UTF-8):	Narzędzia do manipulacji na plikach fontów dla Pythona 3
 Group:		Libraries/Python
 Requires:	python3-modules >= 1:3.4
-Requires:	python3-brotli >= 1.0.1
-Requires:	python3-munkres >= 1.0.10
-Requires:	python3-unicodedata2 >= 10.0.0
+%if "%{py3_ver}" < "3.7"
+Requires:	python3-unicodedata2 >= 11.0.0
+%endif
 
 %description -n python3-fonttools
 Python 3 tools to manipulate font files.
