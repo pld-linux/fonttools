@@ -8,7 +8,7 @@
 Summary:	A tool to convert TrueType/OpenType fonts to XML and back
 Summary(pl.UTF-8):	Narzędzie do konwersji fontów TrueType/OpenType do/z XML-a
 Name:		fonttools
-Version:	3.34.2
+Version:	3.44.0
 Release:	1
 # basic license is BSD
 # FontTools includes Adobe AGL & AGLFN, which is under 3-clauses BSD license
@@ -16,7 +16,7 @@ License:	MIT, BSD
 Group:		Development/Tools
 #Source0Download: https://github.com/fonttools/fonttools/releases
 Source0:	https://github.com/fonttools/fonttools/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	e70418b1d9175a29e7574cd3a7988ccd
+# Source0-md5:	3f9ff311081a0f591a09552902671d29
 URL:		https://github.com/fonttools/fonttools
 %if %(locale -a | grep -q '^C\.utf8$'; echo $?)
 BuildRequires:	glibc-localedb-all
@@ -25,23 +25,26 @@ BuildRequires:	glibc-localedb-all
 BuildRequires:	python-devel >= 1:2.7
 BuildRequires:	python-setuptools
 %if %{with tests}
+BuildRequires:	python-enum34 >= 1.1.6
+BuildRequires:	python-fs >= 2.2.0
 BuildRequires:	python-pytest >= 3.0
-BuildRequires:	python-unicodedata2 >= 11.0.0
-%endif
-%if %{with doc}
-BuildRequires:	sphinx-pdg-2 >= 1.5.5
+BuildRequires:	python-unicodedata2 >= 12.0.0
 %endif
 %endif
 %if %{with python3}
 BuildRequires:	python3-devel >= 1:3.4
 %if %{with tests}
+BuildRequires:	python3-fs >= 2.2.0
 BuildRequires:	python3-pytest >= 3.0
 %if "%{py3_ver}" < "3.7"
-BuildRequires:	python3-unicodedata2 >= 11.0.0
+BuildRequires:	python3-unicodedata2 >= 12.0.0
 %endif
 %endif
 %endif
 BuildRequires:	rpmbuild(macros) >= 1.714
+%if %{with doc}
+BuildRequires:	sphinx-pdg-3 >= 1.5.5
+%endif
 %if %{with python2}
 Requires:	python-fonttools = %{version}-%{release}
 Requires:	python-setuptools
@@ -110,16 +113,27 @@ Narzędzia do manipulacji na plikach fontów dla Pythona 3.
 %build
 export LC_ALL=C.UTF-8
 %if %{with python2}
-%py_build %{?with_tests:test}
-%if %{with doc}
-PYTHONPATH=$(pwd)/build-2/lib \
-%{__make} -C Doc html \
-	SPHINXBUILD=sphinx-build-2
+%py_build
+
+%if %{with tests}
+PYTHONPATH=Lib \
+%{__python} -m pytest Tests
 %endif
 %endif
 
 %if %{with python3}
-%py3_build %{?with_tests:test}
+%py3_build
+
+%if %{with tests}
+PYTHONPATH=Lib \
+%{__python} -m pytest Tests
+%endif
+%endif
+
+%if %{with doc}
+PYTHONPATH=$(pwd)/build-3/lib \
+%{__make} -C Doc html \
+	SPHINXBUILD=sphinx-build-3
 %endif
 
 %install
@@ -142,7 +156,6 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc LICENSE LICENSE.external NEWS.rst README.rst
 %attr(755,root,root) %{_bindir}/fonttools
-%attr(755,root,root) %{_bindir}/pyftinspect
 %attr(755,root,root) %{_bindir}/pyftmerge
 %attr(755,root,root) %{_bindir}/pyftsubset
 %attr(755,root,root) %{_bindir}/ttx
