@@ -1,59 +1,53 @@
 #
 # Conditional build:
-%bcond_without	python2	# CPython 2.x module
-%bcond_without	python3	# CPython 3.x module
 %bcond_without	doc	# Sphinx documentation
 %bcond_without	tests	# pytest tests
 
 Summary:	A tool to convert TrueType/OpenType fonts to XML and back
 Summary(pl.UTF-8):	Narzędzie do konwersji fontów TrueType/OpenType do/z XML-a
 Name:		fonttools
-Version:	3.44.0
-Release:	4
+Version:	4.28.3
+Release:	1
 # basic license is BSD
 # FontTools includes Adobe AGL & AGLFN, which is under 3-clauses BSD license
 License:	MIT, BSD
 Group:		Development/Tools
 #Source0Download: https://github.com/fonttools/fonttools/releases
 Source0:	https://github.com/fonttools/fonttools/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	3f9ff311081a0f591a09552902671d29
+# Source0-md5:	c22566ab3889a7ab56f246721d55f813
 URL:		https://github.com/fonttools/fonttools
 %if %(locale -a | grep -q '^C\.utf8$'; echo $?)
 BuildRequires:	glibc-localedb-all
 %endif
-%if %{with python2}
-BuildRequires:	python-devel >= 1:2.7
-BuildRequires:	python-setuptools
+BuildRequires:	python3-devel >= 1:3.7
 %if %{with tests}
-BuildRequires:	python-enum34 >= 1.1.6
-BuildRequires:	python-fs >= 2.2.0
-BuildRequires:	python-pytest >= 3.0
-BuildRequires:	python-unicodedata2 >= 12.0.0
-%endif
-%endif
-%if %{with python3}
-BuildRequires:	python3-devel >= 1:3.4
-%if %{with tests}
-BuildRequires:	python3-fs >= 2.2.0
+BuildRequires:	python3-brotli >= 1.0.9
+BuildRequires:	python3-fs >= 2.4.14
+BuildRequires:	python3-fs < 3
+BuildRequires:	python3-lxml >= 4
+BuildRequires:	python3-lxml < 5
+BuildRequires:	python3-lz4 >= 1.7.4.2
+BuildRequires:	python3-matplotlib
 BuildRequires:	python3-pytest >= 3.0
-%if "%{py3_ver}" < "3.7"
-BuildRequires:	python3-unicodedata2 >= 12.0.0
+BuildRequires:	python3-scipy
+#BuildRequires:	python3-skia-pathops >= 0.5.0
+BuildRequires:	python3-sympy
+%if "%{py3_ver}" < "3.9"
+BuildRequires:	python3-unicodedata2 >= 13.0.0.post2
 %endif
+#BuildRequires:	python3-zopfli >= 0.1.4
 %endif
-%endif
+BuildRequires:	rpm-build >= 4.6
 BuildRequires:	rpmbuild(macros) >= 1.714
 %if %{with doc}
-BuildRequires:	sphinx-pdg-3 >= 1.5.5
+# preferred versions: reportlab 3.6.3, sphinx_rtd_theme 1.0.0, Sphinx 4.3.1
+BuildRequires:	python3-ReportLab >= 3.5
+BuildRequires:	python3-sphinx_rtd_theme >= 0.4
+BuildRequires:	sphinx-pdg-3 >= 3
 %endif
-%if %{with python2}
-Requires:	python-fonttools = %{version}-%{release}
-Requires:	python-setuptools
-%else
 Requires:	python3-fonttools = %{version}-%{release}
 Requires:	python3-setuptools
-%endif
 Provides:	ttx = %{version}-%{release}
-BuildArch:	noarch
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -68,37 +62,13 @@ Zostało napisane w Pythonie i ma otwartą licencję w stylu BSD. TTX
 potrafi wykonywać zrzuty fontów TrueType i OpenType do formatu
 tekstowego opartego na XML-u oraz dokonać operacji odwrotnej.
 
-%package -n python-fonttools
-Summary:	Python 2 tools to manipulate font files
-Summary(pl.UTF-8):	Narzędzia do manipulacji na plikach fontów dla Pythona 2
-Group:		Libraries/Python
-Requires:	python-modules >= 1:2.7
-Requires:	python-unicodedata2 >= 11.0.0
-
-%description -n python-fonttools
-Python 2 tools to manipulate font files.
-
-%description -n python-fonttools -l pl.UTF-8
-Narzędzia do manipulacji na plikach fontów dla Pythona 2.
-
-%package -n python-fonttools-apidocs
-Summary:	Documentation for Python fonttools module
-Summary(pl.UTF-8):	Dokumentacja modułu Pythona fonttools
-Group:		Documentation
-
-%description -n python-fonttools-apidocs
-Documentation for Python fonttools module.
-
-%description -n python-fonttools-apidocs -l pl.UTF-8
-Dokumentacja modułu Pythona fonttools.
-
 %package -n python3-fonttools
 Summary:	Python 3 tools to manipulate font files
 Summary(pl.UTF-8):	Narzędzia do manipulacji na plikach fontów dla Pythona 3
 Group:		Libraries/Python
-Requires:	python3-modules >= 1:3.4
-%if "%{py3_ver}" < "3.7"
-Requires:	python3-unicodedata2 >= 11.0.0
+Requires:	python3-modules >= 1:3.7
+%if "%{py3_ver}" < "3.9"
+Requires:	python3-unicodedata2 >= 13.0.0.post2
 %endif
 
 %description -n python3-fonttools
@@ -107,31 +77,33 @@ Python 3 tools to manipulate font files.
 %description -n python3-fonttools -l pl.UTF-8
 Narzędzia do manipulacji na plikach fontów dla Pythona 3.
 
+%package -n python3-fonttools-apidocs
+Summary:	Documentation for Python fonttools module
+Summary(pl.UTF-8):	Dokumentacja modułu Pythona fonttools
+Group:		Documentation
+BuildArch:	noarch
+
+%description -n python3-fonttools-apidocs
+Documentation for Python fonttools module.
+
+%description -n python3-fonttools-apidocs -l pl.UTF-8
+Dokumentacja modułu Pythona fonttools.
+
 %prep
 %setup -q
 
 %build
-export LC_ALL=C.UTF-8
-%if %{with python2}
-%py_build
-
-%if %{with tests}
-PYTHONPATH=Lib \
-%{__python} -m pytest Tests
-%endif
-%endif
-
-%if %{with python3}
 %py3_build
 
 %if %{with tests}
-PYTHONPATH=Lib \
-%{__python} -m pytest Tests
-%endif
+PATH="$(pwd):$PATH" \
+PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 \
+PYTHONPATH=$(pwd)/Lib \
+%{__python3} -m pytest Tests
 %endif
 
 %if %{with doc}
-PYTHONPATH=$(pwd)/build-3/lib \
+PYTHONPATH=$(pwd)/Lib \
 %{__make} -C Doc html \
 	SPHINXBUILD=sphinx-build-3
 %endif
@@ -139,15 +111,10 @@ PYTHONPATH=$(pwd)/build-3/lib \
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%if %{with python3}
 %py3_install
-%endif
 
-%if %{with python2}
-%py_install
-
-%py_postclean
-%endif
+# sources
+%{__rm} $RPM_BUILD_ROOT%{py3_sitedir}/fontTools/cu2qu/*.c
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -161,22 +128,36 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/ttx
 %{_mandir}/man1/ttx.1*
 
-%if %{with python2}
-%files -n python-fonttools
-%defattr(644,root,root,755)
-%{py_sitescriptdir}/fontTools
-%{py_sitescriptdir}/fonttools-%{version}-py*.egg-info
-
-%if %{with doc}
-%files -n python-fonttools-apidocs
-%defattr(644,root,root,755)
-%doc Doc/build/html/{_static,designspaceLib,misc,pens,ttLib,varLib,*.html,*.js}
-%endif
-%endif
-
-%if %{with python3}
 %files -n python3-fonttools
 %defattr(644,root,root,755)
-%{py3_sitescriptdir}/fontTools
-%{py3_sitescriptdir}/fonttools-%{version}-py*.egg-info
+%dir %{py3_sitedir}/fontTools
+%{py3_sitedir}/fontTools/*.py
+%{py3_sitedir}/fontTools/__pycache__
+%{py3_sitedir}/fontTools/cffLib
+%{py3_sitedir}/fontTools/colorLib
+%dir %{py3_sitedir}/fontTools/cu2qu
+%attr(755,root,root) %{py3_sitedir}/fontTools/cu2qu/cu2qu.cpython-*.so
+%{py3_sitedir}/fontTools/cu2qu/*.py
+%{py3_sitedir}/fontTools/cu2qu/__pycache__
+%{py3_sitedir}/fontTools/designspaceLib
+%{py3_sitedir}/fontTools/encodings
+%{py3_sitedir}/fontTools/feaLib
+%{py3_sitedir}/fontTools/misc
+%{py3_sitedir}/fontTools/mtiLib
+%{py3_sitedir}/fontTools/otlLib
+%{py3_sitedir}/fontTools/pens
+%{py3_sitedir}/fontTools/subset
+%{py3_sitedir}/fontTools/svgLib
+%{py3_sitedir}/fontTools/t1Lib
+%{py3_sitedir}/fontTools/ttLib
+%{py3_sitedir}/fontTools/ufoLib
+%{py3_sitedir}/fontTools/unicodedata
+%{py3_sitedir}/fontTools/varLib
+%{py3_sitedir}/fontTools/voltLib
+%{py3_sitedir}/fonttools-%{version}-py*.egg-info
+
+%if %{with doc}
+%files -n python3-fonttools-apidocs
+%defattr(644,root,root,755)
+%doc Doc/build/html/{_images,_modules,_static,cffLib,colorLib,cu2qu,designspaceLib,encodings,feaLib,misc,otlLib,pens,subset,svgLib,ttLib,ufoLib,unicodedata,varLib,*.html,*.js}
 %endif
