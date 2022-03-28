@@ -6,15 +6,15 @@
 Summary:	A tool to convert TrueType/OpenType fonts to XML and back
 Summary(pl.UTF-8):	Narzędzie do konwersji fontów TrueType/OpenType do/z XML-a
 Name:		fonttools
-Version:	4.28.3
-Release:	2
+Version:	4.31.2
+Release:	1
 # basic license is BSD
 # FontTools includes Adobe AGL & AGLFN, which is under 3-clauses BSD license
 License:	MIT, BSD
 Group:		Development/Tools
 #Source0Download: https://github.com/fonttools/fonttools/releases
 Source0:	https://github.com/fonttools/fonttools/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	c22566ab3889a7ab56f246721d55f813
+# Source0-md5:	c925704fee22c5d87f2625c7cd8b8247
 URL:		https://github.com/fonttools/fonttools
 %if %(locale -a | grep -q '^C\.utf8$'; echo $?)
 BuildRequires:	glibc-localedb-all
@@ -22,6 +22,7 @@ BuildRequires:	glibc-localedb-all
 BuildRequires:	python3-devel >= 1:3.7
 %if %{with tests}
 BuildRequires:	python3-brotli >= 1.0.9
+#BuildRequires:	python3-freetype-py >= 2.2.0
 BuildRequires:	python3-fs >= 2.4.14
 BuildRequires:	python3-fs < 3
 BuildRequires:	python3-lxml >= 4
@@ -29,13 +30,14 @@ BuildRequires:	python3-lxml < 5
 BuildRequires:	python3-lz4 >= 1.7.4.2
 BuildRequires:	python3-matplotlib
 BuildRequires:	python3-pytest >= 3.0
-BuildRequires:	python3-scipy
-#BuildRequires:	python3-skia-pathops >= 0.5.0
+BuildRequires:	python3-scipy >= 1.7.3
+BuildRequires:	python3-skia-pathops >= 0.7.2
 BuildRequires:	python3-sympy
+#BuildRequires:	python3-ufoLib2 >= 0.13.0
 %if "%{py3_ver}" < "3.9"
-BuildRequires:	python3-unicodedata2 >= 13.0.0.post2
+BuildRequires:	python3-unicodedata2 >= 14.0.0
 %endif
-#BuildRequires:	python3-zopfli >= 0.1.4
+#BuildRequires:	python3-zopfli >= 0.1.9
 %endif
 BuildRequires:	rpm-build >= 4.6
 BuildRequires:	rpmbuild(macros) >= 1.714
@@ -142,6 +144,7 @@ rm -rf $RPM_BUILD_ROOT
 %{py3_sitedir}/fontTools/designspaceLib
 %{py3_sitedir}/fontTools/encodings
 %{py3_sitedir}/fontTools/feaLib
+%{py3_sitedir}/fontTools/merge
 %{py3_sitedir}/fontTools/misc
 %{py3_sitedir}/fontTools/mtiLib
 %{py3_sitedir}/fontTools/otlLib
