@@ -46,9 +46,9 @@ BuildRequires:	rpm-build >= 4.6
 BuildRequires:	rpmbuild(macros) >= 1.750
 %if %{with doc}
 # preferred versions: reportlab 3.6.3, sphinx_rtd_theme 1.0.0, Sphinx 4.3.1
-BuildRequires:	python3-ReportLab >= 3.5
-BuildRequires:	python3-sphinx_rtd_theme >= 0.4
-BuildRequires:	sphinx-pdg-3 >= 3
+BuildRequires:	python3-reportlab >= 3.6.3
+BuildRequires:	python3-sphinx_rtd_theme >= 1.0.0
+BuildRequires:	sphinx-pdg-3 >= 4.3.1
 %endif
 Requires:	python3-fonttools = %{version}-%{release}
 Requires:	python3-setuptools
