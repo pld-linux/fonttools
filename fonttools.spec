@@ -6,15 +6,15 @@
 Summary:	A tool to convert TrueType/OpenType fonts to XML and back
 Summary(pl.UTF-8):	Narzędzie do konwersji fontów TrueType/OpenType do/z XML-a
 Name:		fonttools
-Version:	4.38.0
-Release:	3
+Version:	4.58.0
+Release:	1
 # basic license is BSD
 # FontTools includes Adobe AGL & AGLFN, which is under 3-clauses BSD license
 License:	MIT, BSD
 Group:		Development/Tools
 #Source0Download: https://github.com/fonttools/fonttools/releases
 Source0:	https://github.com/fonttools/fonttools/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	2e225e2db5bb8541419a2232474dc9a4
+# Source0-md5:	d51d8be881aebb35a6852eb7f5733cef
 URL:		https://github.com/fonttools/fonttools
 %if %(locale -a | grep -q '^C\.utf8$'; echo $?)
 BuildRequires:	glibc-localedb-all
@@ -27,7 +27,6 @@ BuildRequires:	python3-brotli >= 1.0.9
 BuildRequires:	python3-fs >= 2.4.16
 BuildRequires:	python3-fs < 3
 BuildRequires:	python3-lxml >= 4
-BuildRequires:	python3-lxml < 5
 BuildRequires:	python3-lz4 >= 1.7.4.2
 BuildRequires:	python3-matplotlib
 BuildRequires:	python3-pytest >= 3.0
@@ -119,7 +118,7 @@ rm -rf $RPM_BUILD_ROOT
 %py3_install
 
 # sources
-%{__rm} $RPM_BUILD_ROOT%{py3_sitedir}/fontTools/cu2qu/*.c
+%{__rm} $RPM_BUILD_ROOT%{py3_sitedir}/fontTools/*u2*u/*.c
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -153,6 +152,10 @@ rm -rf $RPM_BUILD_ROOT
 %{py3_sitedir}/fontTools/mtiLib
 %{py3_sitedir}/fontTools/otlLib
 %{py3_sitedir}/fontTools/pens
+%dir %{py3_sitedir}/fontTools/qu2cu
+%attr(755,root,root) %{py3_sitedir}/fontTools/qu2cu/qu2cu.cpython-*.so
+%{py3_sitedir}/fontTools/qu2cu/*.py
+%{py3_sitedir}/fontTools/qu2cu/__pycache__
 %{py3_sitedir}/fontTools/subset
 %{py3_sitedir}/fontTools/svgLib
 %{py3_sitedir}/fontTools/t1Lib
