@@ -6,23 +6,23 @@
 Summary:	A tool to convert TrueType/OpenType fonts to XML and back
 Summary(pl.UTF-8):	Narzędzie do konwersji fontów TrueType/OpenType do/z XML-a
 Name:		fonttools
-Version:	4.60.1
-Release:	1
+Version:	4.68.0
+Release:	2
 # basic license is BSD
 # FontTools includes Adobe AGL & AGLFN, which is under 3-clauses BSD license
 License:	MIT, BSD
 Group:		Development/Tools
 #Source0Download: https://github.com/fonttools/fonttools/releases
 Source0:	https://github.com/fonttools/fonttools/archive/%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	9953a8262cac55018d110edeb7ef2981
+# Source0-md5:	282480af584d02ce04d206da376f30e4
 URL:		https://github.com/fonttools/fonttools
 %if %(locale -a | grep -q '^C\.utf8$'; echo $?)
 BuildRequires:	glibc-localedb-all
 %endif
 BuildRequires:	python3-Cython
-BuildRequires:	python3-devel >= 1:3.9
+BuildRequires:	python3-devel >= 1:3.11
 %if %{with tests}
-BuildRequires:	python3-brotli >= 1.0.9
+BuildRequires:	python3-brotli >= 1.2.1
 #BuildRequires:	python3-freetype-py >= 2.3.0
 BuildRequires:	python3-fs >= 2.4.16
 BuildRequires:	python3-fs < 3
@@ -51,7 +51,6 @@ BuildRequires:	python3-sphinx_rtd_theme >= 3.0.2
 BuildRequires:	sphinx-pdg-3 >= 8.1.3
 %endif
 Requires:	python3-fonttools = %{version}-%{release}
-Requires:	python3-setuptools
 Provides:	ttx = %{version}-%{release}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -71,7 +70,7 @@ tekstowego opartego na XML-u oraz dokonać operacji odwrotnej.
 Summary:	Python 3 tools to manipulate font files
 Summary(pl.UTF-8):	Narzędzia do manipulacji na plikach fontów dla Pythona 3
 Group:		Libraries/Python
-Requires:	python3-modules >= 1:3.9
+Requires:	python3-modules >= 1:3.11
 %if "%{_ver_lt %{py3_ver} 3.12}" == "1"
 Requires:	python3-unicodedata2 >= 15.1.0
 %endif
@@ -146,6 +145,7 @@ rm -rf $RPM_BUILD_ROOT
 %{py3_sitedir}/fontTools/cu2qu/*.py
 %{py3_sitedir}/fontTools/cu2qu/__pycache__
 %{py3_sitedir}/fontTools/designspaceLib
+%{py3_sitedir}/fontTools/diff
 %{py3_sitedir}/fontTools/encodings
 %{py3_sitedir}/fontTools/feaLib
 %{py3_sitedir}/fontTools/merge
